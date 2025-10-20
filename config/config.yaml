@@ -1,0 +1,27 @@
+# UNITY CATALOG CONFIGURATION
+catalog_name: main
+schema_name: weather_etl
+
+tables:
+  raw: raw_weather
+  silver: silver_weather_curated
+  gold: gold_weather_aggregates
+
+partition_column: ingest_date
+
+# SOURCE API DETAILS
+source_api:
+  base_url: "https://archive-api.open-meteo.com/v1/archive"
+  params:
+    latitude: 28.6139
+    longitude: 77.2090
+    hourly: ["temperature_2m", "relative_humidity_2m", "precipitation"]
+    start_date: "2024-10-01"
+    end_date: "2024-10-05"
+    timezone: "auto"
+
+# EXPECTED SCHEMA
+schema:
+  temperature_2m: double
+  relative_humidity_2m: double
+  precipitation: double
