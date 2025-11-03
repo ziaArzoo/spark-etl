@@ -31,6 +31,7 @@ def run(cfg: dict, spark: SparkSession):
         .withColumn("day", dayofmonth(col("timestamp")))
         .withColumn("month", month(col("timestamp")))
         .withColumn("year", year(col("timestamp")))
+
     )
 
     #  Enforce expected schema 

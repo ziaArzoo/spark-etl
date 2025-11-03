@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, avg, sum as _sum
+from pyspark.sql.functions import col, avg, sum as _sum, max as _max
 import datetime as dt
 
 def run(cfg: dict, spark: SparkSession):
@@ -15,17 +15,16 @@ def run(cfg: dict, spark: SparkSession):
     print(f" Reading curated data from Silver table: {table_silver}")
     df_silver = spark.table(table_silver)
 
-    # 1️⃣ Group by Year-Month
+    #  Group by Year-Month
     df_gold = (
         df_silver.groupBy("year", "month")
         .agg(
             avg(col("temperature_2m")).alias("avg_temperature"),
             avg(col("relative_humidity_2m")).alias("avg_humidity"),
-            _sum(col("precipitation")).alias("total_precipitation")
-        )
-        .withColumn("created_at", col("transform_ts"))
-    )
+            _sum(col("precipitation")).alias("total_precipitation"),
 
+        )
+    )
     (
         df_gold.write.format("delta")
           .mode("overwrite")
