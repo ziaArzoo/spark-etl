@@ -22,3 +22,5 @@ gold/
 .idea/
 # Jupyter
 .ipynb_checkpoints/
+# Environment and secrets
+connection.env

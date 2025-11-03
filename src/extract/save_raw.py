@@ -5,11 +5,7 @@ from .api_client import APIClient
 
 
 def run(cfg: dict, spark: SparkSession) -> str:
-    """
-    Fetch data from Open-Meteo API and write to Unity Catalog managed Delta table.
-    """
-
-    #  Fetch config details
+   
     base_url = cfg["source_api"]["base_url"]
     params = cfg["source_api"]["params"]
     catalog = cfg["catalog_name"]
@@ -17,11 +13,10 @@ def run(cfg: dict, spark: SparkSession) -> str:
     table_name = cfg["tables"]["raw"]
     full_table_name = f"{catalog}.{schema}.{table_name}"
 
-    #  Fetch API JSON
     client = APIClient(base_url, params)
     data = client.fetch()
 
-    #  Flatten JSON to records
+    # Json to records
     hourly = data.get("hourly", {})
     records = []
     for i, ts in enumerate(hourly.get("time", [])):
