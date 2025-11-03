@@ -7,7 +7,7 @@ import datetime as dt
 def run(cfg: dict, spark: SparkSession):
     """
     Transform raw weather data into a curated Silver table.
-    Cleans, normalizes, and enriches the dataset.
+
     """
 
     catalog = cfg["catalog_name"]
@@ -15,16 +15,15 @@ def run(cfg: dict, spark: SparkSession):
     table_raw = f"{catalog}.{schema}.{cfg['tables']['raw']}"
     table_silver = f"{catalog}.{schema}.{cfg['tables']['silver']}"
 
-    print(f"🔄 Reading from raw table: {table_raw}")
+    print(f" Reading from raw table: {table_raw}")
     df = spark.table(table_raw)
 
-    # 1️⃣ Basic cleaning
     df_clean = (
         df.dropna(subset=["temperature_2m", "relative_humidity_2m"])
           .dropDuplicates(["timestamp"])
     )
 
-    # 2️⃣ Convert timestamp & derive time-based fields
+    # Convert timestamp & derive time-based fields
     df_clean = (
         df_clean
         .withColumn("timestamp", to_timestamp("timestamp"))
@@ -34,7 +33,7 @@ def run(cfg: dict, spark: SparkSession):
         .withColumn("year", year(col("timestamp")))
     )
 
-    #  Enforce expected schema (cast to proper types)
+    #  Enforce expected schema 
     df_final = (
         df_clean
         .withColumn("temperature_2m", col("temperature_2m").cast("double"))
@@ -42,7 +41,6 @@ def run(cfg: dict, spark: SparkSession):
         .withColumn("precipitation", col("precipitation").cast("double"))
     )
 
-    #  Add ingest metadata
     df_final = df_final.withColumn("transform_ts", col("ingest_ts"))
     df_final = df_final.withColumn("transform_date", col("ingest_date"))
 

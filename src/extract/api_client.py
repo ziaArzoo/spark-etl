@@ -2,7 +2,6 @@ import requests, time, logging
 from typing import Dict, Any
 
 class APIClient:
-    """Handles REST API calls with retry & backoff."""
 
     def __init__(self, base_url: str, params: Dict[str, Any],
                  max_retries: int = 3, backoff: int = 2):
@@ -13,7 +12,6 @@ class APIClient:
         self.logger = logging.getLogger(__name__)
 
     def fetch(self) -> Dict[str, Any]:
-        """Call API → return JSON dict."""
         attempt = 0
         while attempt < self.max_retries:
             try:

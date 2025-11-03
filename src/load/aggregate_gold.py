@@ -4,8 +4,7 @@ import datetime as dt
 
 def run(cfg: dict, spark: SparkSession):
     """
-    Aggregates curated Silver data into Gold summary table.
-    Produces monthly average temperature, humidity, and total precipitation.
+    Aggregates Silver data
     """
 
     catalog = cfg["catalog_name"]
@@ -13,7 +12,7 @@ def run(cfg: dict, spark: SparkSession):
     table_silver = f"{catalog}.{schema}.{cfg['tables']['silver']}"
     table_gold = f"{catalog}.{schema}.{cfg['tables']['gold']}"
 
-    print(f"🔄 Reading curated data from Silver table: {table_silver}")
+    print(f" Reading curated data from Silver table: {table_silver}")
     df_silver = spark.table(table_silver)
 
     # 1️⃣ Group by Year-Month
@@ -27,7 +26,6 @@ def run(cfg: dict, spark: SparkSession):
         .withColumn("created_at", col("transform_ts"))
     )
 
-    # 2️⃣ Write to Gold table (overwrite for reproducibility)
     (
         df_gold.write.format("delta")
           .mode("overwrite")
@@ -35,5 +33,5 @@ def run(cfg: dict, spark: SparkSession):
           .saveAsTable(table_gold)
     )
 
-    print(f"✅ Gold aggregate table created: {table_gold}")
+    print(f"Gold aggregate table created: {table_gold}")
     return table_gold
