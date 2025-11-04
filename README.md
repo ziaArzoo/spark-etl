@@ -73,7 +73,6 @@ flowchart TD
     D --> E[🧠 LangChain SQL Agent]
     E --> F[💬 Gemini LLM]
     F --> G[📊 Streamlit Chatbot UI]
-    G --> H[(User Query / Visualization)]
 ```
 
 ---
