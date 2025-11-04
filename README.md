@@ -1,55 +1,79 @@
-# 🌤️ Weather ETL Pipeline (PySpark · Delta Lake · Unity Catalog · Databricks)
+# 🌤️ Weather Intelligence Pipeline (PySpark · Delta Lake · Unity Catalog · Databricks · LangChain · Gemini)
 
 [![Databricks Workflow](https://img.shields.io/badge/Databricks-Workflow-orange?logo=databricks)](./workflows/databricks_job_setup.md)
 ![PySpark](https://img.shields.io/badge/PySpark-ETL-brightgreen)
 ![Delta Lake](https://img.shields.io/badge/Storage-Delta%20Lake-blue)
 ![Unity Catalog](https://img.shields.io/badge/Governance-Unity%20Catalog-purple)
-![Python](https://img.shields.io/badge/Python-3.x-yellow)
+![LangChain](https://img.shields.io/badge/LLM-LangChain-lightgreen)
+![Google Gemini](https://img.shields.io/badge/AI-Gemini-red)
+![Streamlit](https://img.shields.io/badge/UI-Streamlit-pink)
 ![Azure](https://img.shields.io/badge/Cloud-Azure-lightblue)
 
 ---
 
 ## 📘 Overview
 
-This project implements a **distributed ETL pipeline** using **PySpark**, **Delta Lake**, and **Databricks Workflows**.  
-It automates ingestion, transformation, and aggregation of weather data from REST APIs, governed under **Unity Catalog**.
+This project implements a **distributed, AI-augmented ETL and analytics system** for weather data using **PySpark**, **Delta Lake**, and **Databricks Workflows** — now extended with an **LLM-powered chatbot** built using **LangChain**, **Google Gemini**, and **Streamlit**.
 
-The pipeline runs daily on Databricks with built-in retries, alerts, and full configuration via YAML + JSON.
+The system automates ingestion, transformation, and aggregation of weather data into **Unity Catalog–governed Delta tables**, and exposes it through a **conversational chatbot interface** that allows natural-language queries over curated Gold data.
 
 ---
 
 ## ⚙️ Key Features
 
-✅ End-to-end ETL (Extract → Transform → Load)  
+✅ End-to-end ETL (Extract → Transform → Load) on Databricks  
 ✅ Delta Lake ACID storage under Unity Catalog  
-✅ Email alert on failure (to `ziaarzoo21@gmail.com`)  
-✅ Retry once after 1 minute (includes timeout retry)  
-✅ Managed Databricks Job JSON (`pipeline.json`)  
+✅ YAML-based configuration for full reproducibility  
+✅ Managed orchestration via Databricks Workflows  
+✅ **Conversational Query Interface** — LangChain + Gemini + Databricks SQL  
+✅ Streamlit front-end for interactive analytics and visualization  
+✅ **Dockerized** environment for local reproducibility  
 ✅ Optional Airflow DAG for hybrid orchestration  
-✅ Config-driven (YAML) + Git versioned notebooks  
-✅ **Containerized with Docker** for reproducibility and portability 
+✅ Automatic retries + email alerts on failure  
 
 ---
 
 ## 🧩 Architecture
 
 ```
-Open-Meteo REST API
-        │
-        ▼
- ┌────────────────────────┐
- │  Bronze (Raw)          │ →  main.weather_etl.raw_weather
- └────────────────────────┘
-        │
-        ▼
- ┌────────────────────────┐
- │  Silver (Curated)      │ →  main.weather_etl.silver_weather_curated
- └────────────────────────┘
-        │
-        ▼
- ┌────────────────────────┐
- │  Gold (Aggregated)     │ →  main.weather_etl.gold_weather_aggregates
- └────────────────────────┘
+          🌐 Open-Meteo REST API
+                    │
+                    ▼
+     ┌──────────────────────────────┐
+     │   Bronze Layer (Raw)         │ → main.weather_etl.raw_weather
+     └──────────────────────────────┘
+                    │
+                    ▼
+     ┌──────────────────────────────┐
+     │   Silver Layer (Curated)     │ → main.weather_etl.silver_weather_curated
+     └──────────────────────────────┘
+                    │
+                    ▼
+     ┌──────────────────────────────┐
+     │   Gold Layer (Aggregated)    │ → main.weather_etl.gold_weather_aggregates
+     └──────────────────────────────┘
+                    │
+                    ▼
+     ┌────────────────────────────────────────────────────────┐
+     │   LLM Chatbot Layer (LangChain + Gemini + Streamlit)   │
+     │   ▸ Natural Language → SQL → Databricks Unity Catalog  │
+     │   ▸ Query visualization (temperature & humidity trends)│
+     └────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🧠 System Flow (Mermaid Diagram)
+
+```mermaid
+flowchart TD
+    A[🌤️ Open-Meteo API] --> B[Bronze Layer: Raw JSON]
+    B --> C[Silver Layer: Cleaned + Normalized]
+    C --> D[Gold Layer: Aggregated Metrics]
+    D --> E[🧠 LangChain SQL Agent]
+    E --> F[💬 Gemini LLM]
+    F --> G[📊 Streamlit Chatbot UI]
+    G --> H[(User Query / Visualization)]
 ```
 
 ---
@@ -57,108 +81,133 @@ Open-Meteo REST API
 ## 🧱 Tech Stack
 
 | Category | Tools |
-|-----------|--------|
+|-----------|-------|
 | Language | Python 3 · PySpark |
 | Storage | Delta Lake |
 | Governance | Unity Catalog |
-| Orchestration | Databricks Jobs (new UI) |
+| Orchestration | Databricks Workflows |
+| AI / LLM | LangChain · Google Gemini (Generative AI) |
+| Frontend | Streamlit |
 | Cloud | Azure Databricks |
 | Version Control | Git + GitHub |
-| Optional | Airflow DAG, Docker |
+| Optional | Airflow DAG · Docker |
+
+---
+
+## 🧠 Chatbot Layer Overview
+
+| Component | Description |
+|------------|-------------|
+| **LLM Backend** | Google Gemini (via `google-generativeai`) |
+| **Framework** | LangChain SQL Agent (`create_sql_agent`) |
+| **Data Source** | Databricks Unity Catalog Gold table (`main.weather_etl.gold_weather_aggregates`) |
+| **Frontend** | Streamlit UI (`src/chatbot/app.py`) |
+| **Environment Variables** | Managed via `.env` (`connection.env`) |
+| **Query Flow** | User query → LangChain Agent → Databricks SQL → Response / Chart |
 
 ---
 
 ## 📂 Repository Structure
 
 ```
-pyspark-etl/
+spark-etl/
 ├── config/
 │   └── config.yaml
-├── notebooks/
-│   ├── Extract data
-│   ├── Transform Data
-│   └── load Data
 ├── src/
 │   ├── extract/
 │   ├── transform/
-│   └── load/
-├── workflow/
+│   ├── load/
+│   └── chatbot/
+│       ├── agent_unity_gemini.py
+│       └── app.py
+├── workflows/
 │   ├── pipeline.json
 │   ├── pipeline_readme.md
 │   └── pipeline_airflow.py
+├── notebooks/
+│   ├── Extract Data
+│   ├── Transform Data
+│   └── Load Data
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚡ Databricks Workflow (New UI)
+## ⚡ Databricks Workflow
 
-**Job name:** `Weather_ETL_Pipeline`
+**Job Name:** `Weather_ETL_Pipeline`
 
 | Setting | Value |
 |----------|--------|
-| Schedule | `14 55 23 * * ?` UTC (≈ 05 : 25 IST daily) |
-| Max concurrent runs | 1 |
-| Retry | 1 retry · 1 min interval |
-| Retry on timeout | ✅ |
-| Queueing | ✅ Enabled |
-| Performance target | `PERFORMANCE_OPTIMIZED` |
-| Email alert | `ziaarzoo21@gmail.com` |
+| Schedule | `14 55 23 * * ?` UTC (≈ 05:25 IST daily) |
+| Retry | 1 retry after 1 minute |
+| Email Alert | `ziaarzoo21@gmail.com` |
+| Concurrency | 1 active run |
+| Queuing | ✅ Enabled |
+| Performance Target | `PERFORMANCE_OPTIMIZED` |
 
-### DAG
-
+**DAG Flow:**
 ```
-extract_raw  →  Transform_Silver  →  Load_Gold
+Extract_Raw → Transform_Silver → Load_Gold
 ```
-
-To import this workflow:
-
-1. Open **Compute → Jobs → Create Job → Import JSON**  
-2. Upload `workflows/pipeline.json`  
-3. Confirm notebook paths and cluster  
-4. Save and run ✅
 
 ---
 
-## ▶️ Running the Pipeline (Manual)
+## 💬 Running the Chatbot
 
-Each notebook automatically loads the config:
+### 🖥️ Local (Recommended)
 
+```bash
+streamlit run src/chatbot/app.py
+```
 
-Run in order:
-1. **Extract data** → creates `raw_weather`
-2. **Transform Data** → creates `silver_weather_curated`
-3. **load Data** → creates `gold_weather_aggregates`
-
+Then open → [http://localhost:8501](http://localhost:8501)
 
 ---
 
-## 🔔 Alerts & Monitoring
+### 🧱 Inside Databricks (Debug Mode)
 
-- Email sent on any task failure.  
-- Retries once after 1 minute (backoff).  
-- “Retry on timeout” enabled.  
+```python
+from src.chatbot.agent_unity_gemini import query_agent
+print(query_agent("Show average temperature by month"))
+```
+
+---
+
+## 🧱 Example Queries
+
+- “Show average humidity trend by month.”  
+- “Which month had the highest rainfall?”  
+- “Give me total precipitation by year.”  
+- “Plot average temperature across all months.”  
+
+---
+
+## 🧾 Example Output
+
+✅ **Natural-language query → SQL translation → Databricks → Gemini response**
+
+```
+User: What was the average temperature in June 2024?
+Gemini: The average temperature recorded in June 2024 was 29.6 °C.
+```
+
+If the query is numeric and tabular, Streamlit automatically displays a **line chart** of the trend.
 
 ---
 
 ## 🧠 Development Flow
 
-1. Update code / config locally in Databricks Repos.  
-2. Commit → Push to GitHub.  
-3. If the workflow changes, re-export JSON and update `workflows/pipeline.json`.  
-4. Run job manually or on schedule.
+1. Update ETL or chatbot code in Databricks Repos  
+2. Commit and push to GitHub  
+3. If the workflow changes, re-export `pipeline.json`  
+4. Run job manually or on schedule  
+5. Test chatbot on updated Gold data  
 
 ---
 
-## 🌀 Airflow Integration (Optional)
-
-An equivalent Airflow DAG is provided in  
-[`workflows/airflow_weather_etl_dag.py`](./workflows/pipeline_airflow.py)
-
-Use it if you want external orchestration via Airflow’s Databricks operators.
-
 ## 🏁 Author
 
-**Zia** — Software developer,  
-building distributed ETL systems using PySpark, Delta, and Azure Databricks.
+**Md Zia Arzoo** — Software Developer  
+Building distributed and intelligent data systems using PySpark, Databricks, and AI-powered analytics.
