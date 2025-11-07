@@ -113,9 +113,7 @@ spark-etl/
 ├── config/
 │   └── config.yaml
 ├── src/
-│   ├── extract/
-│   ├── transform/
-│   ├── load/
+│   ├── ETL/
 │   └── chatbot/
 │       ├── agent_unity_gemini.py
 │       └── app.py
