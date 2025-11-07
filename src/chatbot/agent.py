@@ -20,7 +20,7 @@ genai.configure(api_key=api_key)
 # Initialize LangChain LLM wrapper
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0)
 
-# ✅ FIXED: Connect to Databricks SQL with catalog and schema
+
 db_uri = (
     f"databricks://token:{os.getenv('DATABRICKS_TOKEN')}@"
     f"{os.getenv('DATABRICKS_SERVER_HOSTNAME')}"
