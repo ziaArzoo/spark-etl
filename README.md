@@ -7,7 +7,6 @@
 ![LangChain](https://img.shields.io/badge/LLM-LangChain-lightgreen)
 ![Google Gemini](https://img.shields.io/badge/AI-Gemini-red)
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-pink)
-![Azure](https://img.shields.io/badge/Cloud-Azure-lightblue)
 
 ---
 
