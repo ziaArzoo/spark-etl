@@ -137,7 +137,7 @@ spark-etl/
 
 | Setting | Value |
 |----------|--------|
-| Schedule | `14 55 23 * * ?` UTC (≈ 05:25 IST daily) |
+| Scheduled | yes |
 | Retry | 1 retry after 1 minute |
 | Email Alert | `ziaarzoo21@gmail.com` |
 | Concurrency | 1 active run |
